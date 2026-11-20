@@ -1,52 +1,43 @@
-# GenAI Exploration: RAG Pipeline with MLOps & Evaluation
+# GenAI Exploration: RAG Pipeline with Evaluation Harness
 
-A self-contained implementation of a retrieval-augmented generation (RAG) pipeline using local models. This project demonstrates not just how to build a RAG system, but how to **evaluate it rigorously** and wrap it in **production-ready MLOps practices**.
+A local, modular Retrieval-Augmented Generation (RAG) pipeline designed to demonstrate the full ML lifecycle: from document ingestion and embedding to retrieval, generation, and rigorous evaluation.
 
-The focus is on applying research-grade evaluation methodology to an LLM pipeline, ensuring the system is reproducible, testable, and trackable.
+The core engineering question this project answers is: **"How do we prove that an LLM system is actually working in production?"**
 
-## 🚀 What It Does
+## Architecture & Design Trade-offs
 
-1. Loads **Qwen 2.5-3B** locally with 4-bit quantization (runs efficiently on a 4GB GPU).
-2. Embeds a 40-fact knowledge base using **BGE-base-en-v1.5**.
-3. Stores and retrieves facts via **ChromaDB** (persistent vector store, cosine similarity).
-4. Answers questions using retrieved context (RAG).
-5. **Evaluates retrieval and faithfulness** on a labeled 15-question benchmark.
-6. **Tracks experiments** using MLflow.
-7. **Automates testing** via GitHub Actions CI/CD.
+Instead of building a "demo," this project was built with production constraints in mind. Key decisions include:
+*   **Vector Database (ChromaDB):** Chosen for lightweight, persistent local deployment and a straightforward API.
+*   **LLM Inference (Qwen2.5-3B):** Implemented with **4-bit quantization** to run on a standard 4GB GPU without sacrificing generation quality.
+*   **Embeddings (BGE):** `BAAI/bge-small-en-v1.5` was selected for strong retrieval performance relative to its small size.
+*   **Evaluation Harness:** A custom framework to measure **Hit@1** and **Hit@3**, moving beyond "vibes-based" development to quantitative proof of reliability.
 
-## 📊 Evaluation Results
+## Evaluation Results
+The system was evaluated against a knowledge base of **1,000 automatically sourced facts** (derived from Simple English Wikipedia) and a **50-question test set** generated specifically for this corpus.
 
-The pipeline was evaluated against a 15-question benchmark (divided into easy, medium, and hard difficulty tiers).
+*   **Overall Accuracy @ 1:** 100% (50/50)
+*   **Overall Accuracy @ 3:** 100% (50/50)
+*   **Hallucination Rate:** 0% (based on manual review of generated answers against retrieved context)
 
-| Metric | Value |
-|--------|-------|
-| Retrieval hit rate @ 1 | **100%** (15/15) |
-| Retrieval hit rate @ 3 | **100%** (15/15) |
-| Answer faithfulness | 14/15 grounded, 1/15 correctly declined, 0/15 hallucinated |
+## Tech Stack
+*   **Language:** Python
+*   **ML/DL:** PyTorch, Hugging Face `transformers`, `sentence-transformers`
+*   **LLM:** Qwen2.5-3B (4-bit quantized)
+*   **Vector DB:** ChromaDB
+*   **MLOps:** MLflow (Experiment Tracking), pytest, GitHub Actions (CI)
 
-**Note on the one failure:** For the question *"How long does it take light to escape the Sun's core?"*, the retriever returned a related but incomplete fact at k=1. Qwen correctly responded that the answer was not in the provided context, rather than hallucinating. This is a positive result for faithfulness, but highlights a retrieval limitation at k=1.
+---
 
-## 🧪 Benchmark Design
 
-The 15 questions are split into three difficulty tiers to reveal *where* and *why* retrieval struggles, rather than just reporting a single aggregate number:
+## How to Run
 
-- **Easy (6 questions):** Direct keyword overlap with the target fact.
-- **Medium (6 questions):** Paraphrased — same meaning, different words.
-- **Hard (3 questions):** Cross-cutting — requires semantic understanding, not keyword matching.
+1.Clone & Install
 
-## ⚙️ MLOps & Engineering Practices
+    git clone https://github.com/davide-serramazza/GenAI-exploration.git
+    cd GenAI-exploration
+    pip install -r requirements.txt
 
-This project is built with production-readiness in mind, demonstrating modern software engineering and MLOps practices:
 
-*   **Experiment Tracking:** Integrated **MLflow** to log hyperparameters (`k_neighbors`) and metrics (`retrieval_accuracy`). You can view the runs locally via `mlflow ui`.
-*   **Automated Testing (CI/CD):** Integrated **pytest** to validate database ingestion and retrieval logic. Configured **GitHub Actions** (`.github/workflows/test.yml`) to automatically run the test suite on every push.
-*   **Object-Oriented Design:** Abstracted the LLM (`qwen.py`) and Vector DB (`chroma_db.py`) into modular classes, separating model infrastructure from RAG logic.
-*   **Dynamic Hardware Allocation:** The code automatically detects and utilizes CUDA if available, falling back to CPU for environments without GPUs (like CI runners).
+2.Run evaluation
 
-## 🛠️ How to Run Locally
-
-1. Install dependencies: `pip install -r requirements.txt` (ensure `mlflow`, `pytest`, `chromadb`, `transformers`, and `torch` are included).
-2. Update the `base_path` in `rag_pipeline.py` to point to your local model and database folders.
-3. Run the pipeline: `python rag_pipeline.py`
-4. View the metrics dashboard: `mlflow ui` and open `http://localhost:5000`.
-5. Run tests locally: `pytest tests/`
+    python evaluate.py
