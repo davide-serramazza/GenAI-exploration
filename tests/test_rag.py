@@ -1,5 +1,4 @@
-import pytest
-from chroma_db import Chromadb
+from local.chroma_db import Chromadb
 from kb import kb
 
 def test_chroma_retrieval():
