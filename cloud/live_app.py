@@ -52,15 +52,13 @@ def ask_question(req: AskRequest):
         .get()
     )
 
-    retrieved_facts = {
-            "id": docs[0].id,
-            "title": docs[0].to_dict().get("title", ""),
-            "text": docs[0].to_dict().get("text", ""),
-        }
+    retrieved_facts = [{
+        "id": doc.id,
+        "title": doc.to_dict().get("title", ""),
+        "text": doc.to_dict().get("text", ""),
+    } for doc in docs]
 
-    print(retrieved_facts)
-
-    context_block = retrieved_facts["text"] # "\n".join([f"- {f['text']}" for f in retrieved_facts])
+    context_block = "\n".join([f"- {f['text']}" for f in retrieved_facts])
 
     # 3. Generate grounded answer via Groq
     chat_completion = groq_client.chat.completions.create(
