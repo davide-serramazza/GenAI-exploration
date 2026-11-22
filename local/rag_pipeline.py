@@ -23,13 +23,13 @@ def main():
     vectordb = Chromadb(db_path=join(base_path,"chroma_db"), embedder_path=join(base_path,"bge-base-1.5"),device=device)
 
     # 2. Setup DB
-    with open("kb.json", "r", encoding="utf-8") as f:
+    with open("../kb.json", "r", encoding="utf-8") as f:
         facts = json.load(f)
     kb = [k['fact'] for k in facts]
     vectordb.populate_collection(kb)
 
     # 3. Run Benchmark for k = 1 and k = 3
-    with open("questions.json", "r", encoding="utf-8") as f:
+    with open("../questions.json", "r", encoding="utf-8") as f:
         eval_set = json.load(f)
     for k_k in [1,3]:
         with mlflow.start_run(run_name=r"k_{k_k}", nested=True):

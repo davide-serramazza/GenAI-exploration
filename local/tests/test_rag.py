@@ -1,5 +1,10 @@
+import pytest
+import json
 from local.chroma_db import Chromadb
-from kb import kb
+
+with open("kb.json", "r", encoding="utf-8") as f:
+    facts = json.load(f)
+kb = [k['fact'] for k in facts]
 
 def test_chroma_retrieval():
     """
@@ -13,10 +18,10 @@ def test_chroma_retrieval():
         db.populate_collection(kb)
 
         # Query for Cleopatra
-        results = db.query("Who was Cleopatra?", n_results=1)
+        results = db.query("Who wrote the song Radioactive?", n_results=1)
 
         # Assert that we got exactly 1 result back
         assert len(results['documents'][0]) == 1
 
         # Assert that the top result is indeed the Cleopatra fact
-        assert "Cleopatra" in results['documents'][0][0]
+        assert "Radioactive" in results['documents'][0][0]
