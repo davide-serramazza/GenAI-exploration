@@ -52,8 +52,8 @@ The system was evaluated against a knowledge base of **1,000 automatically sourc
 
 ### Clone & Install
 
-    git clone https://github.com/davide-serramazza/GenAI-exploration.git
-    cd GenAI-exploration
+    git clone https://github.com/davide-serramazza/cloud-rag-harness
+    cd cloud-rag-harness
     pip install -r local/requirements.txt
     python local/evaluate.py
 
