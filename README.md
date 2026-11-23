@@ -2,7 +2,7 @@
 
 A modular Retrieval-Augmented Generation (RAG) pipeline demonstrating the full ML lifecycle: from document ingestion and embedding to retrieval, generation, and rigorous evaluation. This repository contains **two implementations**: a local, GPU-based version and a cloud-native, serverless version.
 
-**🔴 Live Demo:** [https://rag-live-service-276396696377.us-central1.run.app](https://rag-live-service-276396696377.us-central1.run.app)
+[**🔴 Live Demo URL:** ](https://rag-live-service-276396696377.us-central1.run.app/docs#/)
 
 *   `GET /` — Health check
 *   `POST /ask` — Query the RAG pipeline
